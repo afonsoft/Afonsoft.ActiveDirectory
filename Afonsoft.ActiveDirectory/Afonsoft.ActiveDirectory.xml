@@ -1,0 +1,656 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Afonsoft.ActiveDirectory</name>
+    </assembly>
+    <members>
+        <member name="T:Afonsoft.ActiveDirectory.ActiveDirectory">
+            <summary>
+            Classe para controle e acesso do ActiveDirectory
+            Referencia da Class (http://www.codeproject.com/Articles/18102/Howto-Almost-Everything-In-Active-Directory-via-C#32)
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ActiveDirectory.LDAP">
+            <summary>
+            LDAP = Url do LDAP Ex: LDAP://ocean.one.com/DC=ocean,DC=one,DC=com
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ActiveDirectory.LDAP_USER">
+            <summary>
+            Usuário do LDAP
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ActiveDirectory.LDAP_PASS">
+            <summary>
+            Senha do usuário do LDAP
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ActiveDirectory.PropertiesToLoad">
+            <summary>
+            propertiesToLoad
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ActiveDirectory.#ctor(System.String,System.String,System.String)">
+            <summary>
+            ActiveDirectory
+            </summary>
+            <param name="ldap">LDAP - Default: DomainManager.RootPath</param>
+            <param name="ldapUser">Usuário</param>
+            <param name="ldapPass">Senha</param>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ActiveDirectory.#ctor(System.String,System.String)">
+            <summary>
+            ActiveDirectory - LDAP: DomainManager.RootPath
+            </summary>
+            <param name="ldapUser">Usuário</param>
+            <param name="ldapPass">Senha</param>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ActiveDirectory.#ctor">
+            <summary>
+            Construdor da classe.
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ActiveDirectory.GetDirectoryEntry">
+            <summary>
+            Recuperar o Diretorio padrão da DN
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ActiveDirectory.GetDirectoryEntry(System.String)">
+            <summary>
+            Recuperar o Diretorio da DN
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ActiveDirectory.Search(System.String,System.String,System.String[])">
+            <summary>
+            Localizar um objeto no AD
+            </summary>
+            <param name="filter">(&amp;(objectClass=user)(objectCategory=person))(!(userAccountControl:1.2.840.113556.1.4.803:=2))</param>
+            <param name="rootSubPath"></param>
+            <param name="propertiesToLoad"></param>
+            <returns>SearchResultCollection</returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ActiveDirectory.Search(System.String,System.String[])">
+            <summary>
+            Localizar um objeto no AD
+            </summary>
+            <param name="filter">(&amp;(objectClass=user)(objectCategory=person))(!(userAccountControl:1.2.840.113556.1.4.803:=2))</param>
+            <param name="propertiesToLoad"></param>
+            <returns>SearchResultCollection</returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ActiveDirectory.SearchOne(System.String,System.String,System.String[])">
+            <summary>
+            Localizar um objeto no AD
+            </summary>
+            <param name="filter">(&amp;(objectClass=user)(objectCategory=person))(!(userAccountControl:1.2.840.113556.1.4.803:=2))</param>
+            <param name="rootSubPath">OU=Equipe TI,DC=ocean,DC=one,DC=com</param>
+            <param name="propertiesToLoad"></param>
+            <returns>SearchResult</returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ActiveDirectory.SearchOne(System.String,System.String[])">
+            <summary>
+            Localizar um objeto no AD
+            </summary>
+            <param name="filter">(&amp;(objectClass=user)(objectCategory=person))(!(userAccountControl:1.2.840.113556.1.4.803:=2))</param>
+            <param name="propertiesToLoad"></param>
+            <returns>SearchResult</returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ActiveDirectory.Login(System.String,System.String)">
+            <summary>
+            Efetuar o login do usuario do AD
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ActiveDirectory.Dispose">
+            <summary>
+            Destruir a classe.
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ActiveDirectory.Finalize">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="T:Afonsoft.ActiveDirectory.DomainManager">
+            <summary>
+            Recuperar informações do DomainName (LDAP)
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.DomainManager.DomainControllerName">
+            <summary>
+            Nome do controle do dominio
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.DomainManager.ComputerName">
+            <summary>
+            Nome do Computador (OCSP1TI25)
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.DomainManager.DomainName">
+            <summary>
+            Nome do dominio (ocean.one.com)
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.DomainManager.DomainPath">
+            <summary>
+            Path do Dominio (DC=ocean,DC=one,DC=com)
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.DomainManager.RootSubPath">
+            <summary>
+            Incluir OU/CN antes do DC
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.DomainManager.RootPath">
+            <summary>
+            Recuperar o caminho correto do DomainName/DomainPath
+            string.Format("LDAP://{0}/{1}{2}", DomainName, (string.IsNullOrEmpty(RootSubPath) ? RootSubPath : RootSubPath + ","), DomainPath);
+            LDAP://ocean.one.com/DC=ocean,DC=one,DC=com
+            </summary>
+        </member>
+        <member name="T:Afonsoft.ActiveDirectory.Interface.IActiveDirectory">
+            <summary>
+            IActiveDirectory
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.GetProperty(System.String)">
+            <summary>
+            Retrieve the value of the property.
+            </summary>
+            <param name="propertyName">property name</param>
+            <returns></returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.GetProperty``1(System.String)">
+            <summary>
+            Retrieve the value of the property.
+            </summary>
+            <param name="propertyName">property name</param>
+            <returns></returns>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.Entry">
+            <summary>
+            DirectoryEntry
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.Guid">
+            <summary>
+            Guid
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.NativeGuid">
+            <summary>
+            NativeGuid
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.Dn">
+            <summary>
+            Account
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.Cn">
+            <summary>
+            Account
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.Ou">
+            <summary>
+            Account
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.IsActive">
+            <summary>
+            Verifica se o objeto está ativo ou inativo
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.UserAccountControl">
+            <summary>
+            UserAccountControl
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.WhenCreated">
+            <summary>
+            Created - DateTime
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.DistinguishedName">
+            <summary>
+            DistinguishedName
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.Interface.IActiveDirectory.SAMAccountName">
+            <summary>
+            SAMAccountName
+            </summary>
+        </member>
+        <member name="T:Afonsoft.ActiveDirectory.LogonTime">
+            <summary>
+            LogonTime
+            LoginHours (byte[]) (https://anlai.wordpress.com/2010/09/07/active-directory-permitted-logon-times-with-c-net-3-5-using-system-directoryservices-accountmanagement/)
+            LoginHours (List) https://github.com/anlai/Permitted-Logon-Times-for-Active-Directory
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.LogonTime.DayOfWeek">
+            <summary>
+            DayOfWeek
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.LogonTime.BeginTime">
+            <summary>
+            BeginTime
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.LogonTime.EndTime">
+            <summary>
+            EndTime
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.LogonTime.TimeZoneOffSet">
+            <summary>
+            TimeZoneOffSet
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.LogonTime.#ctor(System.DayOfWeek,System.DateTime,System.DateTime)">
+            <summary>
+            LogonTime
+            </summary>
+            <param name="dayOfWeek">dayOfWeek</param>
+            <param name="beginTime">beginTime</param>
+            <param name="endTime">endTime</param>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.LogonTime.#ctor(System.DayOfWeek,System.TimeSpan,System.TimeSpan)">
+            <summary>
+            LogonTime
+            </summary>
+            <param name="dayOfWeek">dayOfWeek</param>
+            <param name="begin">begin</param>
+            <param name="end">end</param>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.LogonTime.#ctor(System.DayOfWeek,System.DateTime,System.DateTime,System.TimeZoneInfo)">
+            <summary>
+            LogonTime
+            </summary>
+            <param name="dayOfWeek">dayOfWeek</param>
+            <param name="beginTime">beginTime</param>
+            <param name="endTime">endTime</param>
+            <param name="timeZone">timeZone</param>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.LogonTime.#ctor(System.DayOfWeek,System.TimeSpan,System.TimeSpan,System.TimeZoneInfo)">
+            <summary>
+            LogonTime
+            </summary>
+            <param name="dayOfWeek">dayOfWeek</param>
+            <param name="begin">begin</param>
+            <param name="end">end</param>
+            <param name="timeZone">timeZone</param>
+        </member>
+        <member name="T:Afonsoft.ActiveDirectory.PermittedLogonTimes">
+            <summary>
+            LoginHours (byte[]) (https://anlai.wordpress.com/2010/09/07/active-directory-permitted-logon-times-with-c-net-3-5-using-system-directoryservices-accountmanagement/)
+            LoginHours (List) https://github.com/anlai/Permitted-Logon-Times-for-Active-Directory
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.PermittedLogonTimes.GetByteMask(System.Collections.Generic.List{Afonsoft.ActiveDirectory.LogonTime})">
+            <summary>
+            Calculates the byte mask for Active Directory Logon Times
+            </summary>
+            <param name="logonTimes">List of LogonTime objects to signify allows times</param>
+            <returns>Active directory byte mask</returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.PermittedLogonTimes.GetLogonTimes(System.Byte[])">
+            <summary>
+            Calculate the logon times based on an Active Directory byte mask
+            </summary>
+            <param name="byteMask">Active Directory byte mask</param>
+            <returns>List of LogonTime objects to signify allows times</returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.PermittedLogonTimes.GetLogonTimes(System.Byte[],System.TimeZoneInfo)">
+            <summary>
+            Calculate the logon times based on an Active Directory byte mask
+            </summary>
+            <param name="byteMask">Active Directory byte mask</param>
+            <param name="timeZone">Time zone to convert to</param>
+            <returns>List of LogonTime objects to signify allows times</returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.PermittedLogonTimes.InitializeTimeArray">
+            <summary>
+            Initialize an array for every hour of everyday for a week
+            </summary>
+            <remarks>
+            Each slot represents an hour of a day.  Ex. [0]=sunday 12am GMT, [1]=sunday 1am GMT ...
+            
+            During calculations based on time offset, hours will shift, Ex. [0]=sunday 1am GMT-1, [1]=sunday 2am GMT-1 ...
+            
+            PST Calcuation (GMT -8): [9]=sunday 8am, [1]=sunday 9am
+            
+            All values will be stored with an offset relative to GMT
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.PermittedLogonTimes.MarkHours(System.Boolean[],Afonsoft.ActiveDirectory.LogonTime)">
+            <summary>
+            Mark the hours that have been selected
+            </summary>
+            <param name="hours"></param>
+            <param name="logonTime"></param>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.PermittedLogonTimes.ConvertToAD(System.Boolean[])">
+            <summary>
+            Convert the bool array to an AD byte mask
+            </summary>
+            <param name="hours"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.PermittedLogonTimes.ConvertBlockToAD(System.Boolean[])">
+            <summary>
+            Convert individual blocks into AD
+            </summary>
+            <param name="hours"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.PermittedLogonTimes.CalculateLocationValue(System.Int32)">
+            <summary>
+            Calculate individual byte mask locations
+            </summary>
+            <param name="location"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.PermittedLogonTimes.MarkHours(System.Byte[])">
+            <summary>
+            Fills in an hour array based on bytemask
+            </summary>
+            <param name="byteMask"></param>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.PermittedLogonTimes.ParseBlock(System.Byte,System.Boolean[],System.Int32)">
+            <summary>
+            Convert the byte block back into the array
+            </summary>
+            <param name="block"></param>
+            <param name="hours"></param>
+            <param name="index"></param>
+        </member>
+        <member name="T:Afonsoft.ActiveDirectory.ObjectActiveDirectory">
+            <summary>
+            Referencia da Class (http://www.codeproject.com/Articles/18102/Howto-Almost-Everything-In-Active-Directory-via-C#32)
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ObjectActiveDirectory.#ctor">
+            <summary>
+            ObjectActiveDirectory
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ObjectActiveDirectory.#ctor(System.DirectoryServices.DirectoryEntry)">
+            <summary>
+            ObjectActiveDirectory
+            </summary>
+            <param name="entry">DirectoryEntry</param>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ObjectActiveDirectory.Entry">
+            <summary>
+            DirectoryEntry
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ObjectActiveDirectory.Guid">
+            <summary>
+            Guid
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ObjectActiveDirectory.NativeGuid">
+            <summary>
+            Guid
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ObjectActiveDirectory.Dn">
+            <summary>
+            DN - Path
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ObjectActiveDirectory.Cn">
+            <summary>
+            Cn
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ObjectActiveDirectory.Ou">
+            <summary>
+            Ou
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ObjectActiveDirectory.UserAccountControl">
+            <summary>
+            Ou
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ObjectActiveDirectory.IsActive">
+            <summary>
+            Verifica se o objeto está ativo ou inativo
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ObjectActiveDirectory.WhenCreated">
+            <summary>
+            Date of Create object in AD
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ObjectActiveDirectory.DistinguishedName">
+            <summary>
+            DistinguishedName
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.ObjectActiveDirectory.SAMAccountName">
+            <summary>
+            SAMAccountName - Login
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ObjectActiveDirectory.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ObjectActiveDirectory.GetProperty(System.String)">
+            <summary>
+            Retrieve the value of the property.
+            </summary>
+            <param name="propertyName">property name</param>
+            <returns></returns>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.ObjectActiveDirectory.GetProperty``1(System.String)">
+            <summary>
+            Retrieve the value of the property.
+            </summary>
+            <param name="propertyName">property name</param>
+            <returns></returns>
+        </member>
+        <member name="T:Afonsoft.ActiveDirectory.UserActiveDirectory">
+            <summary>
+            User of AD
+            </summary>
+        </member>
+        <member name="M:Afonsoft.ActiveDirectory.UserActiveDirectory.#ctor(System.DirectoryServices.DirectoryEntry)">
+            <summary>
+            ObjectActiveDirectory
+            </summary>
+            <param name="entry">DirectoryEntry</param>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.Mail">
+            <summary>
+            General
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.TelephoneNumber">
+            <summary>
+            General
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.GivenName">
+            <summary>
+            General
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.SurName">
+            <summary>
+            General
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.DisplayName">
+            <summary>
+            General
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.Description">
+            <summary>
+            General
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.Url">
+            <summary>
+            General
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.WWWHomePage">
+            <summary>
+            General
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.PhysicalDeliveryOfficeName">
+            <summary>
+            General
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.Department">
+            <summary>
+            Organization
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.Manager">
+            <summary>
+            Organization - Manager CN Path
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.Title">
+            <summary>
+            Organization
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.Company">
+            <summary>
+            Organization
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.UserPrincipalName">
+            <summary>
+            Account
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.ProfilePath">
+            <summary>
+            Profile
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.ScriptPath">
+            <summary>
+            Profile
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.HomeDirectory">
+            <summary>
+            Profile
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.HomeDrive">
+            <summary>
+            Profile
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.HomePhone">
+             <summary>
+            Telephones 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.OtherHomePhone">
+             <summary>
+            Telephones 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.Pager">
+             <summary>
+            Telephones 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.OtherPager">
+             <summary>
+            Telephones 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.Mobile">
+             <summary>
+            Telephones 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.OtherMobile">
+             <summary>
+            Telephones 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.FacsimileTelephoneNumber">
+             <summary>
+            Telephones 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.OtherFacsimileTelephoneNumber">
+             <summary>
+            Telephones 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.IpPhone">
+             <summary>
+            Telephones 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.OtherIpPhone">
+             <summary>
+            Telephones 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.Info">
+             <summary>
+            Telephones 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.StreetAddress">
+             <summary>
+            street Address 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.PostalCode">
+             <summary>
+            postal Code 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.PostOfficeBox">
+             <summary>
+            post Office Box 
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.St">
+             <summary>
+            State / province
+             </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.LogonHours">
+            <summary>
+            LogonHours
+            https://github.com/anlai/Permitted-Logon-Times-for-Active-Directory
+            https://anlai.wordpress.com/2010/09/07/active-directory-permitted-logon-times-with-c-net-3-5-using-system-directoryservices-accountmanagement/
+            <code>
+                Liberado para todos os horarios
+                LogonHours = null 
+            </code>
+            <code>
+                todos os byte 0 bloqueados em todos os horarios
+                LogonHours = byte[21] 
+            </code>
+            </summary>
+        </member>
+        <member name="P:Afonsoft.ActiveDirectory.UserActiveDirectory.LogonTimes">
+            <summary>
+            LogonTimes
+            </summary>
+        </member>
+    </members>
+</doc>
