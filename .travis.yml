@@ -1,0 +1,20 @@
+language: csharp
+sudo: required  
+dist: xenial 
+mono:
+  - latest
+os:
+  - linux
+  - osx
+solution: Afonsoft.ActiveDirectory.sln
+env:
+  global:
+    - ResolveNuGetPackageAssets=true
+    - EnableNuGetPackageRestore=true
+install:
+  - nuget restore Afonsoft.ActiveDirectory.sln
+script:
+  - xbuild /p:Configuration=Release Afonsoft.ActiveDirectory.sln
+cache:
+  directories:
+    - bin
