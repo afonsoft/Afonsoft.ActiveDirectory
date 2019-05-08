@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Afonsoft.ActiveDirectory
+namespace Afonsoft.ActiveDirectory.Times
 {
     /// <summary>
     /// LogonTime

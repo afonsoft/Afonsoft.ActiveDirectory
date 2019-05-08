@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.DirectoryServices;
-using System.Text;
+using Afonsoft.ActiveDirectory.Domain;
 
 namespace Afonsoft.ActiveDirectory
 {
@@ -13,33 +12,30 @@ namespace Afonsoft.ActiveDirectory
     {
 
         #region Variaveis
-        private string _LDAP = DomainManager.RootPath;
 
         /// <summary>
         /// LDAP = Url do LDAP Ex: LDAP://ocean.one.com/DC=ocean,DC=one,DC=com
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public string LDAP { get { return _LDAP; } private set { _LDAP = value; } }
+        public string LDAP { get; private set; }
 
-        private string _LDAP_USER = "UserPortal";
         /// <summary>
         /// Usuário do LDAP
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public string LDAP_USER { get { return _LDAP_USER; } private set { _LDAP_USER = value; } }
+        public string LDAP_USER { get; private set; } = "";
 
-        private string _LDAP_PASS = "@v!@nc@2014";
         /// <summary>
         /// Senha do usuário do LDAP
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public string LDAP_PASS { get { return _LDAP_PASS; } private set { _LDAP_PASS = value; } }
+        public string LDAP_PASS { get; private set; } = "";
 
 
         /// <summary>
         /// Default propertiesToLoad
         /// </summary>
-        private string[] PropertiesToLoad { get; set; } = new string[] { "cn", "OU", "UserAccountControl", "WhenCreated", "DistinguishedName", "sAMAccountName" };
+        private string[] PropertiesToLoad { get; } = new string[] { "cn", "OU", "UserAccountControl", "WhenCreated", "DistinguishedName", "sAMAccountName" };
 
 
         #endregion
@@ -58,14 +54,14 @@ namespace Afonsoft.ActiveDirectory
             LDAP_USER = ldapUser;
             LDAP_PASS = ldapPass;
 
-            if (String.IsNullOrEmpty(LDAP))
+            if (string.IsNullOrEmpty(LDAP))
                 LDAP = DomainManager.RootPath;
 
-            if (String.IsNullOrEmpty(LDAP_USER))
-                LDAP_USER = "UserPortal";
+            if (string.IsNullOrEmpty(LDAP_USER))
+                throw new ArgumentNullException(nameof(LDAP_USER));
 
-            if (String.IsNullOrEmpty(LDAP_PASS))
-                LDAP_PASS = "@v!@nc@2014";
+            if (string.IsNullOrEmpty(LDAP_PASS))
+                throw new ArgumentNullException(nameof(LDAP_PASS));
 
             if (!Login(LDAP_USER, LDAP_PASS))
                 LDAP = DomainManager.RootPath;
@@ -85,11 +81,11 @@ namespace Afonsoft.ActiveDirectory
             LDAP_PASS = ldapPass;
             LDAP = DomainManager.RootPath;
 
-            if (String.IsNullOrEmpty(LDAP_USER))
-                LDAP_USER = "UserPortal";
+            if (string.IsNullOrEmpty(LDAP_USER))
+                throw new ArgumentNullException(nameof(LDAP_USER));
 
-            if (String.IsNullOrEmpty(LDAP_PASS))
-                LDAP_PASS = "@v!@nc@2014";
+            if (string.IsNullOrEmpty(LDAP_PASS))
+                throw new ArgumentNullException(nameof(LDAP_PASS));
 
             if (!Login(LDAP_USER, LDAP_PASS))
                 throw new Exception("Não foi possivel efetuar uma conexão no Active Directory (AD) com o usuário informado. " + Environment.NewLine + " LDAP: " + LDAP + Environment.NewLine + " USER: " + LDAP_USER);
@@ -134,17 +130,17 @@ namespace Afonsoft.ActiveDirectory
         /// </summary>
         /// <param name="filter">(&amp;(objectClass=user)(objectCategory=person))(!(userAccountControl:1.2.840.113556.1.4.803:=2))</param>
         /// <param name="rootSubPath"></param>
-        /// <param name="propertiesToLoad"></param>
+        /// <param name="propertiesToLoad">"cn", "OU", "UserAccountControl", "WhenCreated", "DistinguishedName", "sAMAccountName"</param>
         /// <returns>SearchResultCollection</returns>
         public SearchResultCollection Search(string filter, string rootSubPath, params string[] propertiesToLoad)
         {
             DomainManager.RootSubPath = rootSubPath;
             string rootPath = DomainManager.RootPath.Replace(DomainManager.DomainPath, "").Replace(",,", ",") + DomainManager.DomainPath;
-            DirectoryEntry de = null;
+            DirectoryEntry de;
             try
             {
                 de = new DirectoryEntry(rootPath, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
-                if (de == null || de.Guid == Guid.Empty)
+                if (de.Guid == Guid.Empty)
                 {
                     DomainManager.RootSubPath = "";
                     de = new DirectoryEntry(DomainManager.RootPath, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
@@ -156,7 +152,7 @@ namespace Afonsoft.ActiveDirectory
                 de = new DirectoryEntry(DomainManager.RootPath, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
             }
 
-            if (de == null || de.Guid == Guid.Empty)
+            if (de.Guid == Guid.Empty)
                 de = GetDirectoryEntry(LDAP);
 
             de.RefreshCache();
@@ -185,7 +181,6 @@ namespace Afonsoft.ActiveDirectory
         /// Localizar um objeto no AD
         /// </summary>
         /// <param name="filter">(&amp;(objectClass=user)(objectCategory=person))(!(userAccountControl:1.2.840.113556.1.4.803:=2))</param>
-        /// <param name="propertiesToLoad"></param>
         /// <returns>SearchResultCollection</returns>
         public SearchResultCollection Search(string filter)
         {
@@ -196,7 +191,7 @@ namespace Afonsoft.ActiveDirectory
         /// Localizar um objeto no AD
         /// </summary>
         /// <param name="filter">(&amp;(objectClass=user)(objectCategory=person))(!(userAccountControl:1.2.840.113556.1.4.803:=2))</param>
-        /// <param name="propertiesToLoad"></param>
+        /// <param name="propertiesToLoad">"cn", "OU", "UserAccountControl", "WhenCreated", "DistinguishedName", "sAMAccountName"</param>
         /// <returns>SearchResultCollection</returns>
         public SearchResultCollection Search(string filter, params string[] propertiesToLoad)
         {
@@ -208,17 +203,17 @@ namespace Afonsoft.ActiveDirectory
         /// </summary>
         /// <param name="filter">(&amp;(objectClass=user)(objectCategory=person))(!(userAccountControl:1.2.840.113556.1.4.803:=2))</param>
         /// <param name="rootSubPath">OU=Equipe TI,DC=ocean,DC=one,DC=com</param>
-        /// <param name="propertiesToLoad"></param>
+        /// <param name="propertiesToLoad">"cn", "OU", "UserAccountControl", "WhenCreated", "DistinguishedName", "sAMAccountName"</param>
         /// <returns>SearchResult</returns>
         public SearchResult SearchOne(string filter, string rootSubPath, params string[] propertiesToLoad)
         {
             DomainManager.RootSubPath = rootSubPath;
             string rootPath = DomainManager.RootPath.Replace(DomainManager.DomainPath, "").Replace(",,", ",") + DomainManager.DomainPath;
-            DirectoryEntry de = null;
+            DirectoryEntry de;
             try
             {
                 de = new DirectoryEntry(rootPath, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
-                if (de == null || de.Guid == Guid.Empty)
+                if (de.Guid == Guid.Empty)
                 {
                     DomainManager.RootSubPath = "";
                     de = new DirectoryEntry(DomainManager.RootPath, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
@@ -230,7 +225,7 @@ namespace Afonsoft.ActiveDirectory
                 de = new DirectoryEntry(DomainManager.RootPath, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
             }
 
-            if (de == null || de.Guid == Guid.Empty)
+            if (de.Guid == Guid.Empty)
                 de = GetDirectoryEntry(LDAP);
 
             de.RefreshCache();
@@ -258,7 +253,7 @@ namespace Afonsoft.ActiveDirectory
         /// Localizar um objeto no AD
         /// </summary>
         /// <param name="filter">(&amp;(objectClass=user)(objectCategory=person))(!(userAccountControl:1.2.840.113556.1.4.803:=2))</param>
-        /// <param name="propertiesToLoad"></param>
+        /// <param name="propertiesToLoad">"cn", "OU", "UserAccountControl", "WhenCreated", "DistinguishedName", "sAMAccountName"</param>
         /// <returns>SearchResult</returns>
         public SearchResult SearchOne(string filter, params string[] propertiesToLoad)
         {
@@ -290,8 +285,7 @@ namespace Afonsoft.ActiveDirectory
                 {
                     if (de.Username == login)
                         return true;
-                    else
-                        return false;
+                    return false;
                 }
 
                 return false;
@@ -310,9 +304,6 @@ namespace Afonsoft.ActiveDirectory
         public void Dispose()
         {
             Dispose(true);
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.SuppressFinalize(this);
         }
 
         bool _disposed;
@@ -329,6 +320,9 @@ namespace Afonsoft.ActiveDirectory
                 }
                 _disposed = true;
             }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.SuppressFinalize(this);
         }
         /// <summary>
         /// Dispose

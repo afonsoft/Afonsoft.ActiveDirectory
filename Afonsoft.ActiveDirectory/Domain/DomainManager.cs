@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Text;
 using System.DirectoryServices.ActiveDirectory;
+using System.Text;
 
-namespace Afonsoft.ActiveDirectory
+namespace Afonsoft.ActiveDirectory.Domain
 {
     /// <summary>
     /// Recuperar informações do DomainName (LDAP)
@@ -15,13 +15,13 @@ namespace Afonsoft.ActiveDirectory
             try
             {
                 ComputerName = Environment.MachineName;
-                Domain domain = Domain.GetCurrentDomain();
+                System.DirectoryServices.ActiveDirectory.Domain domain = System.DirectoryServices.ActiveDirectory.Domain.GetCurrentDomain();
                 DomainName = domain.Name;
                 DomainController domainController = domain.PdcRoleOwner;
                 DomainControllerName = domainController.Name.Split('.')[0];
 
-                domain?.Dispose();
-                domainController?.Dispose();
+                domain.Dispose();
+                domainController.Dispose();
             }
             catch
             {
@@ -33,17 +33,17 @@ namespace Afonsoft.ActiveDirectory
         /// <summary>
         /// Nome do controle do dominio
         /// </summary>
-        public static string DomainControllerName { get; private set; }
+        public static string DomainControllerName { get; }
 
         /// <summary>
         /// Nome do Computador (OCSP1TI25)
         /// </summary>
-        public static string ComputerName { get; private set; }
+        public static string ComputerName { get; }
 
         /// <summary>
         /// Nome do dominio (ocean.one.com)
         /// </summary>
-        public static string DomainName { get; private set; }
+        public static string DomainName { get; }
 
         /// <summary>
         /// Path do Dominio (DC=ocean,DC=one,DC=com)

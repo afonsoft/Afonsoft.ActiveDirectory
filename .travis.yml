@@ -1,20 +1,19 @@
 language: csharp
 sudo: required  
 dist: xenial 
-mono:
-  - latest
-os:
-  - linux
-  - osx
-solution: Afonsoft.ActiveDirectory.sln
+mono: latest
+dotnet: 2.2.203
 env:
   global:
     - ResolveNuGetPackageAssets=true
     - EnableNuGetPackageRestore=true
+    - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
+    - DOTNET_CLI_TELEMETRY_OPTOUT=1
+os:
+  - linux
+  - osx
+solution: Afonsoft.ActiveDirectory.sln
 install:
-  - nuget restore Afonsoft.ActiveDirectory.sln
+  - dotnet restore
 script:
-  - xbuild /p:Configuration=Release Afonsoft.ActiveDirectory.sln
-cache:
-  directories:
-    - bin
+  - dotnet build Afonsoft.ActiveDirectory.sln -f netstandard2.0

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace Afonsoft.ActiveDirectory
+namespace Afonsoft.ActiveDirectory.Times
 {
     /// <summary>
     /// LoginHours (byte[]) (https://anlai.wordpress.com/2010/09/07/active-directory-permitted-logon-times-with-c-net-3-5-using-system-directoryservices-accountmanagement/)
@@ -25,7 +24,7 @@ namespace Afonsoft.ActiveDirectory
             foreach (var time in logonTimes)
             {
                 // skip a block to go to the 24 block set that represents the targetted day
-                var dayOffset = (int)time.DayOfWeek * 24;
+                //var dayOffset = (int)time.DayOfWeek * 24;
                 // mark the hours
                 MarkHours(hours, time);
             }
@@ -43,7 +42,7 @@ namespace Afonsoft.ActiveDirectory
             try
             {
                 if (byteMask == null) return null;
-                TimeZoneInfo zone = null;
+                TimeZoneInfo zone;
                 try
                 {
                     zone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneInfo.Local.StandardName);
@@ -197,7 +196,7 @@ namespace Afonsoft.ActiveDirectory
 
             }
 
-            return new byte[3] { Convert.ToByte(set[0]), Convert.ToByte(set[1]), Convert.ToByte(set[2]) };
+            return new[] { Convert.ToByte(set[0]), Convert.ToByte(set[1]), Convert.ToByte(set[2]) };
         }
 
         /// <summary>
@@ -300,7 +299,7 @@ namespace Afonsoft.ActiveDirectory
 
             var ltimes = new List<LogonTime>();
 
-            int? begin = null, end = null;
+            int? begin = null;
 
             for (var i = 0; i < hours.Length; i++)
             {
@@ -323,13 +322,12 @@ namespace Afonsoft.ActiveDirectory
                 }
                 else if (begin.HasValue && !hours[index])
                 {
-                    end = CalculateHour(index, offset);
+                    int? end = CalculateHour(index, offset);
 
                     // save the day
                     ltimes.Add(new LogonTime(CalculateDay(index, offset), new DateTime(2011, 1, 1, begin.Value, 0, 0), new DateTime(2011, 1, 1, end.Value, 0, 0)));
 
                     begin = null;
-                    end = null;
                 }
 
             }

@@ -12,13 +12,8 @@ namespace Afonsoft.ActiveDirectory
         /// <summary>
         /// ObjectActiveDirectory
         /// </summary>
-        public ObjectActiveDirectory() { }
-
-        /// <summary>
-        /// ObjectActiveDirectory
-        /// </summary>
         /// <param name="entry">DirectoryEntry</param>
-        public ObjectActiveDirectory(DirectoryEntry entry)
+        protected ObjectActiveDirectory(DirectoryEntry entry)
         {
             Entry = entry;
         }
@@ -31,53 +26,17 @@ namespace Afonsoft.ActiveDirectory
         /// <summary>
         /// Guid
         /// </summary>
-        public string Guid
-        {
-            get
-            {
-                if (Entry != null)
-                {
-                    return Entry.Guid.ToString();
-                }
-                else
-                {
-                    return "";
-                }
-            }
-        }
+        public string Guid => Entry != null ? Entry.Guid.ToString() : "";
 
         /// <summary>
         /// Guid
         /// </summary>
-        public string NativeGuid
-        {
-            get
-            {
-                if (Entry != null)
-                {
-                    return Entry.NativeGuid.ToString();
-                }
-                else
-                {
-                    return "";
-                }
-            }
-        }
+        public string NativeGuid => Entry != null ? Entry.NativeGuid : "";
 
         /// <summary>
         /// DN - Path
         /// </summary>
-        public string Dn
-        {
-            get
-            {
-                if (Entry != null)
-                {
-                    return Entry.Path;
-                }
-                return "";
-            }
-        }
+        public string Dn => Entry != null ? Entry.Path : "";
 
         /// <summary>
         /// Cn
@@ -86,12 +45,10 @@ namespace Afonsoft.ActiveDirectory
         {
             get
             {
-                if (Entry != null)
+                if (Entry == null) return "";
+                if (Entry.Properties.Contains("cn"))
                 {
-                    if (Entry.Properties.Contains("cn"))
-                    {
-                        return (string)Entry.Properties["cn"].Value;
-                    }
+                    return (string)Entry.Properties["cn"].Value;
                 }
                 return "";
             }
@@ -104,12 +61,10 @@ namespace Afonsoft.ActiveDirectory
         {
             get
             {
-                if (Entry != null)
+                if (Entry == null) return "";
+                if (Entry.Properties.Contains("OU"))
                 {
-                    if (Entry.Properties.Contains("OU"))
-                    {
-                        return (string)Entry.Properties["OU"].Value;
-                    }
+                    return (string)Entry.Properties["OU"].Value;
                 }
                 return "";
             }
@@ -122,12 +77,10 @@ namespace Afonsoft.ActiveDirectory
         {
             get
             {
-                if (Entry != null)
+                if (Entry == null) return 0;
+                if (Entry.Properties.Contains("UserAccountControl"))
                 {
-                    if (Entry.Properties.Contains("UserAccountControl"))
-                    {
-                        return (int)Entry.Properties["UserAccountControl"].Value;
-                    }
+                    return (int)Entry.Properties["UserAccountControl"].Value;
                 }
                 return 0;
             }
@@ -140,13 +93,11 @@ namespace Afonsoft.ActiveDirectory
         {
             get
             {
-                if (Entry != null)
+                if (Entry == null) return false;
+                if (Entry.Properties.Contains("userAccountControl"))
                 {
-                    if (Entry.Properties.Contains("userAccountControl"))
-                    {
-                        int flags = (int)Entry.Properties["userAccountControl"].Value;
-                        return !Convert.ToBoolean(flags & 0x0002);
-                    }
+                    int flags = (int)Entry.Properties["userAccountControl"].Value;
+                    return !Convert.ToBoolean(flags & 0x0002);
                 }
                 return false;
             }
@@ -160,12 +111,10 @@ namespace Afonsoft.ActiveDirectory
         {
             get
             {
-                if (Entry != null)
+                if (Entry == null) return DateTime.MinValue;
+                if (Entry.Properties.Contains("WhenCreated"))
                 {
-                    if (Entry.Properties.Contains("WhenCreated"))
-                    {
-                        return (DateTime)Entry.Properties["WhenCreated"].Value;
-                    }
+                    return (DateTime)Entry.Properties["WhenCreated"].Value;
                 }
                 return DateTime.MinValue;
             }
@@ -178,12 +127,10 @@ namespace Afonsoft.ActiveDirectory
         {
             get
             {
-                if (Entry != null)
+                if (Entry == null) return "";
+                if (Entry.Properties.Contains("DistinguishedName"))
                 {
-                    if (Entry.Properties.Contains("DistinguishedName"))
-                    {
-                        return (string)Entry.Properties["DistinguishedName"].Value;
-                    }
+                    return (string)Entry.Properties["DistinguishedName"].Value;
                 }
                 return "";
             }
@@ -196,12 +143,10 @@ namespace Afonsoft.ActiveDirectory
         {
             get
             {
-                if (Entry != null)
+                if (Entry == null) return "";
+                if (Entry.Properties.Contains("sAMAccountName"))
                 {
-                    if (Entry.Properties.Contains("sAMAccountName"))
-                    {
-                        return (string)Entry.Properties["sAMAccountName"].Value;
-                    }
+                    return (string)Entry.Properties["sAMAccountName"].Value;
                 }
                 return "";
             }
@@ -224,12 +169,10 @@ namespace Afonsoft.ActiveDirectory
         /// <returns></returns>
         public object GetProperty(string propertyName)
         {
-            if (Entry != null)
+            if (Entry == null) return null;
+            if (Entry.Properties.Contains(propertyName))
             {
-                if (Entry.Properties.Contains(propertyName))
-                {
-                    return Entry.Properties[propertyName].Value;
-                }
+                return Entry.Properties[propertyName].Value;
             }
             return null;
         }
@@ -241,12 +184,10 @@ namespace Afonsoft.ActiveDirectory
         /// <returns></returns>
         public T GetProperty<T>(string propertyName)
         {
-            if (Entry != null)
+            if (Entry == null) return default(T);
+            if (Entry.Properties.Contains(propertyName))
             {
-                if (Entry.Properties.Contains(propertyName))
-                {
-                    return (T)Entry.Properties[propertyName].Value;
-                }
+                return (T)Entry.Properties[propertyName].Value;
             }
             return default(T);
         }
