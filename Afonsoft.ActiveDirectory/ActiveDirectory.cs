@@ -164,7 +164,7 @@ namespace Afonsoft.ActiveDirectory
             {
                 deSearch.Filter = filter;
                 deSearch.PageSize = 20000;
-                deSearch.CacheResults = false;
+                deSearch.CacheResults = true;
                 deSearch.Asynchronous = true;
                 deSearch.SearchScope = SearchScope.Subtree;
                 deSearch.ClientTimeout = TimeSpan.FromMinutes(30);
@@ -237,7 +237,7 @@ namespace Afonsoft.ActiveDirectory
             {
                 deSearch.Filter = filter;
                 deSearch.PageSize = 1000;
-                deSearch.CacheResults = false;
+                deSearch.CacheResults = true;
                 deSearch.Asynchronous = true;
                 deSearch.SearchScope = SearchScope.Subtree;
                 deSearch.ClientTimeout = TimeSpan.FromMinutes(30);
@@ -306,23 +306,18 @@ namespace Afonsoft.ActiveDirectory
             Dispose(true);
         }
 
-        bool _disposed;
         private void Dispose(bool disposing)
         {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    LDAP = null;
-                    LDAP_USER = null;
-                    LDAP_PASS = null;
+            LDAP = null;
+            LDAP_USER = null;
+            LDAP_PASS = null;
 
-                }
-                _disposed = true;
+            if (disposing)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.SuppressFinalize(this);
             }
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.SuppressFinalize(this);
         }
         /// <summary>
         /// Dispose

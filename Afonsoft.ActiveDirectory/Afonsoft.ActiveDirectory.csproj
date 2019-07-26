@@ -1,22 +1,23 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net47;net45</TargetFrameworks>
 	<Authors>Afonso Dutra Nogueira Filho</Authors>
     <Company>Afonsoft</Company>
     <Copyright>Afonsoft</Copyright>
-    <PackageLicenseUrl>http://opensource.org/licenses/Apache-2.0</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <NeutralLanguage>pt-BR</NeutralLanguage>
-    <AssemblyVersion>2019.5.8</AssemblyVersion>
-    <FileVersion>2019.5.8</FileVersion>
+    <AssemblyVersion>2019.7.26</AssemblyVersion>
+    <FileVersion>2019.7.26</FileVersion>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/afonsoft/Afonsoft.ActiveDirectory</RepositoryUrl>
     <PackageProjectUrl>https://www.afonsoft.com.br</PackageProjectUrl>
     <PackageTags>AD LDAP ActiveDirectory afonsoft</PackageTags>
     <Description>Biblioteca para trabalhar com o AD (ActiveDirectory) através LDAP</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2019.5.8</Version>
+    <Version>2019.7.26</Version>
     <PackageReleaseNotes>Biblioteca para trabalhar com o AD (ActiveDirectory) através LDAP</PackageReleaseNotes>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

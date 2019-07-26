@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.DirectoryServices;
 
-namespace Afonsoft.ActiveDirectory.Interface
+namespace Afonsoft.ActiveDirectory.Interfaces
 {
     /// <summary>
     /// IActiveDirectory
     /// </summary>
-    public interface IActiveDirectory
+    public interface IActiveDirectory : IComparable, IComparer
     {
 
         /// <summary>
@@ -75,6 +76,5 @@ namespace Afonsoft.ActiveDirectory.Interface
         /// SAMAccountName
         /// </summary>
         string SAMAccountName { get;  }
-
     }
 }

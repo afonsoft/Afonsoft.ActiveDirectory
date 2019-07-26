@@ -1,60 +1,92 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.DirectoryServices;
 using Afonsoft.ActiveDirectory.Times;
 
-namespace Afonsoft.ActiveDirectory
+namespace Afonsoft.ActiveDirectory.Models
 {
     /// <summary>
     /// User of AD
     /// </summary>
     public class UserActiveDirectory : ObjectActiveDirectory
     {
+        private DirectoryEntry _entry;
 
         /// <summary>
-        /// ObjectActiveDirectory
+        /// UserActiveDirectory
         /// </summary>
         /// <param name="entry">DirectoryEntry</param>
         public UserActiveDirectory(DirectoryEntry entry) : base(entry)
         {
-            //Preencher os valores das propriedades.
-            Company = GetProperty<string>("company");
-            Description = GetProperty<string>("description");
-            DisplayName = GetProperty<string>("displayName");
-            GivenName = GetProperty<string>("givenName");
-            Mail = GetProperty<string>("mail");
-            SurName = GetProperty<string>("sn");
-            TelephoneNumber = GetProperty<string>("telephoneNumber");
-            Title = GetProperty<string>("title");
-            Url = GetProperty<string>("url");
+            _entry = entry;
+        }
+        /// <summary>
+        /// UserActiveDirectory
+        /// </summary>
+        public UserActiveDirectory() : base()
+        {
+            _entry = null;
+        }
 
-            UserPrincipalName = GetProperty<string>("userPrincipalName");
-            WWWHomePage = GetProperty<string>("wWWHomePage");
+        /// <summary>
+        /// 
+        /// </summary>
+        public new DirectoryEntry Entry
+        {
 
-            PhysicalDeliveryOfficeName = GetProperty<string>("physicalDeliveryOfficeName");
-            Department = GetProperty<string>("department");
-            Manager = GetProperty<string>("manager");
-            ProfilePath = GetProperty<string>("profilePath");
-            ScriptPath = GetProperty<string>("scriptPath");
-            HomeDirectory = GetProperty<string>("homeDirectory");
-            HomeDrive = GetProperty<string>("homeDrive");
-            HomePhone = GetProperty<string>("homePhone");
-            OtherHomePhone = GetProperty<string>("otherHomePhone");
-            Pager = GetProperty<string>("pager");
-            OtherPager = GetProperty<string>("otherPager");
-            Mobile = GetProperty<string>("mobile");
-            OtherMobile = GetProperty<string>("otherMobile");
-            FacsimileTelephoneNumber = GetProperty<string>("facsimileTelephoneNumber");
-            OtherFacsimileTelephoneNumber = GetProperty<string>("otherFacsimileTelephoneNumber");
-            IpPhone = GetProperty<string>("ipPhone");
-            OtherIpPhone = GetProperty<string>("otherIpPhone");
-            Info = GetProperty<string>("info");
-            StreetAddress = GetProperty<string>("streetAddress");
-            PostalCode = GetProperty<string>("postalCode");
-            PostOfficeBox = GetProperty<string>("postOfficeBox");
-            St = GetProperty<string>("st");
+            get
+            {
+                return _entry;
+            }
+            set
+            {
+                _entry = value;
+                Cn = GetProperty<string>("CN");
+                Ou = GetProperty<string>("OU");
+                UserAccountControl = GetProperty<int>("UserAccountControl");
+                WhenCreated = GetProperty<DateTime>("WhenCreated");
+                DistinguishedName = GetProperty<string>("DistinguishedName");
+                SAMAccountName = GetProperty<string>("sAMAccountName");
+                //Preencher os valores das propriedades.
+                Company = GetProperty<string>("company");
+                Description = GetProperty<string>("description");
+                DisplayName = GetProperty<string>("displayName");
+                GivenName = GetProperty<string>("givenName");
+                Mail = GetProperty<string>("mail");
+                SurName = GetProperty<string>("sn");
+                TelephoneNumber = GetProperty<string>("telephoneNumber");
+                Title = GetProperty<string>("title");
+                Url = GetProperty<string>("url");
 
-            LogonHours = GetProperty<byte[]>("logonHours");
-            LogonTimes = PermittedLogonTimes.GetLogonTimes(GetProperty<byte[]>("logonHours"));
+                UserPrincipalName = GetProperty<string>("userPrincipalName");
+                WWWHomePage = GetProperty<string>("wWWHomePage");
+
+                PhysicalDeliveryOfficeName = GetProperty<string>("physicalDeliveryOfficeName");
+                Department = GetProperty<string>("department");
+                Manager = GetProperty<string>("manager");
+                ProfilePath = GetProperty<string>("profilePath");
+                ScriptPath = GetProperty<string>("scriptPath");
+                HomeDirectory = GetProperty<string>("homeDirectory");
+                HomeDrive = GetProperty<string>("homeDrive");
+                HomePhone = GetProperty<string>("homePhone");
+                OtherHomePhone = GetProperty<string>("otherHomePhone");
+                Pager = GetProperty<string>("pager");
+                OtherPager = GetProperty<string>("otherPager");
+                Mobile = GetProperty<string>("mobile");
+                OtherMobile = GetProperty<string>("otherMobile");
+                FacsimileTelephoneNumber = GetProperty<string>("facsimileTelephoneNumber");
+                OtherFacsimileTelephoneNumber = GetProperty<string>("otherFacsimileTelephoneNumber");
+                IpPhone = GetProperty<string>("ipPhone");
+                OtherIpPhone = GetProperty<string>("otherIpPhone");
+                Info = GetProperty<string>("info");
+                StreetAddress = GetProperty<string>("streetAddress");
+                PostalCode = GetProperty<string>("postalCode");
+                PostOfficeBox = GetProperty<string>("postOfficeBox");
+                St = GetProperty<string>("st");
+
+                LogonHours = GetProperty<byte[]>("logonHours");
+                LogonTimes = PermittedLogonTimes.GetLogonTimes(GetProperty<byte[]>("logonHours"));
+            }
         }
 
         //General

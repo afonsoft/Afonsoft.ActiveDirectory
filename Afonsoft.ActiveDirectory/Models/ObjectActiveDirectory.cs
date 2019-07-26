@@ -1,14 +1,16 @@
-﻿using Afonsoft.ActiveDirectory.Interface;
+﻿using Afonsoft.ActiveDirectory.Interfaces;
 using System;
 using System.DirectoryServices;
 
-namespace Afonsoft.ActiveDirectory
+namespace Afonsoft.ActiveDirectory.Models
 {
     /// <summary>
     /// Referencia da Class (http://www.codeproject.com/Articles/18102/Howto-Almost-Everything-In-Active-Directory-via-C#32)
     /// </summary>
     public abstract class ObjectActiveDirectory : IActiveDirectory, IDisposable
     {
+        private DirectoryEntry entry;
+
         /// <summary>
         /// ObjectActiveDirectory
         /// </summary>
@@ -16,12 +18,37 @@ namespace Afonsoft.ActiveDirectory
         protected ObjectActiveDirectory(DirectoryEntry entry)
         {
             Entry = entry;
+
+        }
+        /// <summary>
+        /// ObjectActiveDirectory
+        /// </summary>
+        protected ObjectActiveDirectory()
+        {
+            Entry = null;
         }
 
         /// <summary>
         /// DirectoryEntry
         /// </summary>
-        public DirectoryEntry Entry { get; set; }
+        public DirectoryEntry Entry
+        {
+
+            get
+            {
+                return entry;
+            }
+            set
+            {
+                entry = value;
+                Cn = GetProperty<string>("CN");
+                Ou = GetProperty<string>("OU");
+                UserAccountControl = GetProperty<int>("UserAccountControl");
+                WhenCreated = GetProperty<DateTime>("WhenCreated");
+                DistinguishedName = GetProperty<string>("DistinguishedName");
+                SAMAccountName = GetProperty<string>("sAMAccountName");
+            }
+        }
 
         /// <summary>
         /// Guid
@@ -41,50 +68,20 @@ namespace Afonsoft.ActiveDirectory
         /// <summary>
         /// Cn
         /// </summary>
-        public string Cn
-        {
-            get
-            {
-                if (Entry == null) return "";
-                if (Entry.Properties.Contains("cn"))
-                {
-                    return (string)Entry.Properties["cn"].Value;
-                }
-                return "";
-            }
-        }
+        public string Cn { get; set; }
+
 
         /// <summary>
         /// Ou
         /// </summary>
-        public string Ou
-        {
-            get
-            {
-                if (Entry == null) return "";
-                if (Entry.Properties.Contains("OU"))
-                {
-                    return (string)Entry.Properties["OU"].Value;
-                }
-                return "";
-            }
-        }
+        public string Ou { get; set; }
+
 
         /// <summary>
         /// Ou
         /// </summary>
-        public int UserAccountControl
-        {
-            get
-            {
-                if (Entry == null) return 0;
-                if (Entry.Properties.Contains("UserAccountControl"))
-                {
-                    return (int)Entry.Properties["UserAccountControl"].Value;
-                }
-                return 0;
-            }
-        }
+        public int UserAccountControl { get; set; }
+
 
         /// <summary>
         /// Verifica se o objeto está ativo ou inativo
@@ -94,12 +91,7 @@ namespace Afonsoft.ActiveDirectory
             get
             {
                 if (Entry == null) return false;
-                if (Entry.Properties.Contains("userAccountControl"))
-                {
-                    int flags = (int)Entry.Properties["userAccountControl"].Value;
-                    return !Convert.ToBoolean(flags & 0x0002);
-                }
-                return false;
+                return !Convert.ToBoolean(UserAccountControl & 0x0002);
             }
         }
 
@@ -107,50 +99,20 @@ namespace Afonsoft.ActiveDirectory
         /// <summary>
         /// Date of Create object in AD
         /// </summary>
-        public DateTime WhenCreated
-        {
-            get
-            {
-                if (Entry == null) return DateTime.MinValue;
-                if (Entry.Properties.Contains("WhenCreated"))
-                {
-                    return (DateTime)Entry.Properties["WhenCreated"].Value;
-                }
-                return DateTime.MinValue;
-            }
-        }
+        public DateTime WhenCreated { get; set; }
+
 
         /// <summary>
         /// DistinguishedName
         /// </summary>
-        public string DistinguishedName
-        {
-            get
-            {
-                if (Entry == null) return "";
-                if (Entry.Properties.Contains("DistinguishedName"))
-                {
-                    return (string)Entry.Properties["DistinguishedName"].Value;
-                }
-                return "";
-            }
-        }
+        public string DistinguishedName { get; set; }
+
 
         /// <summary>
         /// SAMAccountName - Login
         /// </summary>
-        public string SAMAccountName
-        {
-            get
-            {
-                if (Entry == null) return "";
-                if (Entry.Properties.Contains("sAMAccountName"))
-                {
-                    return (string)Entry.Properties["sAMAccountName"].Value;
-                }
-                return "";
-            }
-        }
+        public string SAMAccountName { get; set; }
+
 
         /// <summary>
         /// Dispose
@@ -184,12 +146,46 @@ namespace Afonsoft.ActiveDirectory
         /// <returns></returns>
         public T GetProperty<T>(string propertyName)
         {
-            if (Entry == null) return default(T);
+            if (Entry == null) return default;
             if (Entry.Properties.Contains(propertyName))
             {
                 return (T)Entry.Properties[propertyName].Value;
             }
-            return default(T);
+            return default;
+        }
+
+        /// <summary>
+        /// CompareTo
+        /// </summary>
+        /// <param name="obj">ObjectActiveDirectory</param>
+        /// <returns></returns>
+        public int CompareTo(object obj)
+        {
+            if (obj is ObjectActiveDirectory e)
+            {
+                if (this.WhenCreated > e.WhenCreated) return -1;
+                if (this.WhenCreated == e.WhenCreated) return 0;
+                if (this.WhenCreated < e.WhenCreated) return 1;
+            }
+            throw new ArgumentException("obj is not an ObjectActiveDirectory.");
+        }
+
+        /// <summary>
+        /// Compare
+        /// </summary>
+        /// <param name="x">ObjectActiveDirectory</param>
+        /// <param name="y">ObjectActiveDirectory</param>
+        /// <returns></returns>
+        public int Compare(object x, object y)
+        {
+            if (x is ObjectActiveDirectory a && y is ObjectActiveDirectory b)
+            {
+                if (a.WhenCreated > b.WhenCreated) return -1;
+                if (a.WhenCreated == b.WhenCreated) return 0;
+                if (a.WhenCreated < b.WhenCreated) return 1;
+            }
+
+            throw new ArgumentException("x or y is not an ObjectActiveDirectory.");
         }
     }
 }
