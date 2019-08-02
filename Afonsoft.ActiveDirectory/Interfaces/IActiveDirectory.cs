@@ -10,6 +10,7 @@ namespace Afonsoft.ActiveDirectory.Interfaces
     public interface IActiveDirectory : IComparable, IComparer
     {
 
+        
         /// <summary>
         /// Retrieve the value of the property.
         /// </summary>
@@ -27,7 +28,7 @@ namespace Afonsoft.ActiveDirectory.Interfaces
         /// <summary>
         /// DirectoryEntry
         /// </summary>
-        DirectoryEntry Entry { get; set; }
+        DirectoryEntry Entry { get;  }
 
         /// <summary>
         /// Guid
@@ -65,7 +66,7 @@ namespace Afonsoft.ActiveDirectory.Interfaces
         /// <summary>
         /// Created - DateTime
         /// </summary>
-        DateTime WhenCreated { get; }
+        DateTime? WhenCreated { get; }
 
         /// <summary>
         /// DistinguishedName

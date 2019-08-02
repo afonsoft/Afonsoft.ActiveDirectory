@@ -15,7 +15,15 @@ namespace Afonsoft.ActiveDirectory.Domain
             try
             {
                 ComputerName = Environment.MachineName;
-                System.DirectoryServices.ActiveDirectory.Domain domain = System.DirectoryServices.ActiveDirectory.Domain.GetCurrentDomain();
+                System.DirectoryServices.ActiveDirectory.Domain domain;
+                try
+                {
+                    domain = System.DirectoryServices.ActiveDirectory.Domain.GetCurrentDomain();
+                }
+                catch(Exception)
+                {
+                    domain = System.DirectoryServices.ActiveDirectory.Domain.GetComputerDomain();
+                }
                 DomainName = domain.Name;
                 DomainController domainController = domain.PdcRoleOwner;
                 DomainControllerName = domainController.Name.Split('.')[0];
@@ -23,10 +31,10 @@ namespace Afonsoft.ActiveDirectory.Domain
                 domain.Dispose();
                 domainController.Dispose();
             }
-            catch
+            catch(Exception)
             {
-                DomainName = "ocean.one.com";
-                DomainControllerName = "DC=ocean,DC=one,DC=com";
+                DomainName = ComputerName;
+                DomainControllerName = "";
             }
         }
 
@@ -43,7 +51,7 @@ namespace Afonsoft.ActiveDirectory.Domain
         /// <summary>
         /// Nome do dominio (ocean.one.com)
         /// </summary>
-        public static string DomainName { get; }
+        public static string DomainName { get; set; }
 
         /// <summary>
         /// Path do Dominio (DC=ocean,DC=one,DC=com)
@@ -89,7 +97,7 @@ namespace Afonsoft.ActiveDirectory.Domain
                 }
                 catch
                 {
-                    return "LDAP://ocean.one.com/DC=ocean,DC=one,DC=com";
+                    return $"LDAP://{ComputerName}/";
                 }
             }
         }

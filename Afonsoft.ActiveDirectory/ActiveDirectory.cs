@@ -13,23 +13,21 @@ namespace Afonsoft.ActiveDirectory
 
         #region Variaveis
 
+        private ActiveDirectoryOptions _options;
         /// <summary>
-        /// LDAP = Url do LDAP Ex: LDAP://ocean.one.com/DC=ocean,DC=one,DC=com
+        /// ActiveDirectoryOptions
         /// </summary>
-        // ReSharper disable once InconsistentNaming
-        public string LDAP { get; private set; }
-
-        /// <summary>
-        /// Usuário do LDAP
-        /// </summary>
-        // ReSharper disable once InconsistentNaming
-        public string LDAP_USER { get; private set; } = "";
-
-        /// <summary>
-        /// Senha do usuário do LDAP
-        /// </summary>
-        // ReSharper disable once InconsistentNaming
-        public string LDAP_PASS { get; private set; } = "";
+        public ActiveDirectoryOptions Options
+        {
+            get
+            {
+                return _options;
+            }
+            set
+            {
+                _options = value;
+            }
+        }
 
 
         /// <summary>
@@ -42,65 +40,40 @@ namespace Afonsoft.ActiveDirectory
 
         #region ActiveDirectory
 
+        private static ActiveDirectoryOptions Build(Action<ActiveDirectoryOptions> options)
+        {
+            var opt = new ActiveDirectoryOptions();
+            options(opt);
+            return opt;
+        }
+
         /// <summary>
         /// ActiveDirectory
         /// </summary>
-        /// <param name="ldap">LDAP - Default: DomainManager.RootPath</param>
-        /// <param name="ldapUser">Usuário</param>
-        /// <param name="ldapPass">Senha</param>
-        public ActiveDirectory(string ldap, string ldapUser, string ldapPass)
+        public ActiveDirectory(Action<ActiveDirectoryOptions> options)
         {
-            LDAP = ldap;
-            LDAP_USER = ldapUser;
-            LDAP_PASS = ldapPass;
-
-            if (string.IsNullOrEmpty(LDAP))
-                LDAP = DomainManager.RootPath;
-
-            if (string.IsNullOrEmpty(LDAP_USER))
-                throw new ArgumentNullException(nameof(LDAP_USER));
-
-            if (string.IsNullOrEmpty(LDAP_PASS))
-                throw new ArgumentNullException(nameof(LDAP_PASS));
-
-            if (!Login(LDAP_USER, LDAP_PASS))
-                LDAP = DomainManager.RootPath;
-
-            if (!Login(LDAP_USER, LDAP_PASS))
-                throw new Exception("Não foi possivel efetuar uma conexão no Active Directory (AD) com o usuário informado. " + Environment.NewLine + " LDAP: " + LDAP + Environment.NewLine + " USER: " + LDAP_USER);
-        }
-
-        /// <summary>
-        /// ActiveDirectory - LDAP: DomainManager.RootPath
-        /// </summary>
-        /// <param name="ldapUser">Usuário</param>
-        /// <param name="ldapPass">Senha</param>
-        public ActiveDirectory(string ldapUser, string ldapPass)
-        {
-            LDAP_USER = ldapUser;
-            LDAP_PASS = ldapPass;
-            LDAP = DomainManager.RootPath;
-
-            if (string.IsNullOrEmpty(LDAP_USER))
-                throw new ArgumentNullException(nameof(LDAP_USER));
-
-            if (string.IsNullOrEmpty(LDAP_PASS))
-                throw new ArgumentNullException(nameof(LDAP_PASS));
-
-            if (!Login(LDAP_USER, LDAP_PASS))
-                throw new Exception("Não foi possivel efetuar uma conexão no Active Directory (AD) com o usuário informado. " + Environment.NewLine + " LDAP: " + LDAP + Environment.NewLine + " USER: " + LDAP_USER);
+            _options = Build(options);
         }
         /// <summary>
-        /// Construdor da classe.
+        /// ActiveDirectory
         /// </summary>
         public ActiveDirectory()
         {
-
-            LDAP = DomainManager.RootPath;
-
-            if (!Login(LDAP_USER, LDAP_PASS))
-                throw new Exception("Não foi possivel efetuar uma conexão no Active Directory (AD) com o usuário informado. " + Environment.NewLine + " LDAP: " + LDAP + Environment.NewLine + " USER: " + LDAP_USER);
+            _options = new ActiveDirectoryOptions();
         }
+
+
+        public bool CheckConnection()
+        {
+            if (string.IsNullOrEmpty(_options.LDAP))
+                _options.LDAP = DomainManager.RootPath;
+
+            if (!Login(_options.LDAP_USER, _options.LDAP_PASS))
+                return false;
+
+            return true;
+        }
+
         #endregion
 
         #region getDirectoryEntry
@@ -110,7 +83,7 @@ namespace Afonsoft.ActiveDirectory
         /// </summary>
         private DirectoryEntry GetDirectoryEntry()
         {
-            return new DirectoryEntry(LDAP, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
+            return new DirectoryEntry(_options.LDAP, _options.LDAP_USER, _options.LDAP_PASS, _options.AuthenticationTypes);
         }
 
 
@@ -119,7 +92,7 @@ namespace Afonsoft.ActiveDirectory
         /// </summary>
         public DirectoryEntry GetDirectoryEntry(string ldap)
         {
-            return new DirectoryEntry(ldap, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
+            return new DirectoryEntry(ldap, _options.LDAP_USER, _options.LDAP_PASS, _options.AuthenticationTypes);
         }
         #endregion
 
@@ -134,45 +107,52 @@ namespace Afonsoft.ActiveDirectory
         /// <returns>SearchResultCollection</returns>
         public SearchResultCollection Search(string filter, string rootSubPath, params string[] propertiesToLoad)
         {
-            DomainManager.RootSubPath = rootSubPath;
-            string rootPath = DomainManager.RootPath.Replace(DomainManager.DomainPath, "").Replace(",,", ",") + DomainManager.DomainPath;
-            DirectoryEntry de;
             try
             {
-                de = new DirectoryEntry(rootPath, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
-                if (de.Guid == Guid.Empty)
+                DomainManager.RootSubPath = rootSubPath;
+                string rootPath = DomainManager.RootPath.Replace(DomainManager.DomainPath, "").Replace(",,", ",") + DomainManager.DomainPath;
+                DirectoryEntry de;
+                try
+                {
+                    de = new DirectoryEntry(rootPath, _options.LDAP_USER, _options.LDAP_PASS, _options.AuthenticationTypes);
+                    if (de.Guid == Guid.Empty)
+                    {
+                        DomainManager.RootSubPath = "";
+                        de = new DirectoryEntry(DomainManager.RootPath, _options.LDAP_USER, _options.LDAP_PASS, _options.AuthenticationTypes);
+                    }
+                }
+                catch
                 {
                     DomainManager.RootSubPath = "";
-                    de = new DirectoryEntry(DomainManager.RootPath, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
+                    de = new DirectoryEntry(DomainManager.RootPath, _options.LDAP_USER, _options.LDAP_PASS, _options.AuthenticationTypes);
+                }
+
+                if (de.Guid == Guid.Empty)
+                    de = GetDirectoryEntry(_options.LDAP);
+
+                de.RefreshCache();
+
+                if (propertiesToLoad == null || propertiesToLoad.Length <= 0)
+                    propertiesToLoad = PropertiesToLoad;
+
+                using (DirectorySearcher deSearch = new DirectorySearcher(de))
+                {
+                    deSearch.Filter = filter;
+                    deSearch.PageSize = _options.PageSize;
+                    deSearch.CacheResults = _options.CacheResults;
+                    deSearch.Asynchronous = _options.Asynchronous;
+                    deSearch.SearchScope = _options.SearchScope;
+                    deSearch.ClientTimeout = _options.Timeout;
+                    deSearch.ServerTimeLimit = _options.Timeout;
+                    deSearch.ServerPageTimeLimit = _options.Timeout;
+
+                    deSearch.PropertiesToLoad.AddRange(propertiesToLoad);
+                    return deSearch.FindAll();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                DomainManager.RootSubPath = "";
-                de = new DirectoryEntry(DomainManager.RootPath, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
-            }
-
-            if (de.Guid == Guid.Empty)
-                de = GetDirectoryEntry(LDAP);
-
-            de.RefreshCache();
-
-            if (propertiesToLoad == null || propertiesToLoad.Length <= 0)
-                propertiesToLoad = PropertiesToLoad;
-
-            using (DirectorySearcher deSearch = new DirectorySearcher(de))
-            {
-                deSearch.Filter = filter;
-                deSearch.PageSize = 20000;
-                deSearch.CacheResults = true;
-                deSearch.Asynchronous = true;
-                deSearch.SearchScope = SearchScope.Subtree;
-                deSearch.ClientTimeout = TimeSpan.FromMinutes(30);
-                deSearch.ServerTimeLimit = TimeSpan.FromMinutes(30);
-                deSearch.ServerPageTimeLimit = TimeSpan.FromMinutes(30);
-
-                deSearch.PropertiesToLoad.AddRange(propertiesToLoad);
-                return deSearch.FindAll();
+                throw new ActiveDirectoryException(ex.Message, ex);
             }
         }
 
@@ -207,45 +187,52 @@ namespace Afonsoft.ActiveDirectory
         /// <returns>SearchResult</returns>
         public SearchResult SearchOne(string filter, string rootSubPath, params string[] propertiesToLoad)
         {
-            DomainManager.RootSubPath = rootSubPath;
-            string rootPath = DomainManager.RootPath.Replace(DomainManager.DomainPath, "").Replace(",,", ",") + DomainManager.DomainPath;
-            DirectoryEntry de;
             try
             {
-                de = new DirectoryEntry(rootPath, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
-                if (de.Guid == Guid.Empty)
+                DomainManager.RootSubPath = rootSubPath;
+                string rootPath = DomainManager.RootPath.Replace(DomainManager.DomainPath, "").Replace(",,", ",") + DomainManager.DomainPath;
+                DirectoryEntry de;
+                try
+                {
+                    de = new DirectoryEntry(rootPath, _options.LDAP_USER, _options.LDAP_PASS, _options.AuthenticationTypes);
+                    if (de.Guid == Guid.Empty)
+                    {
+                        DomainManager.RootSubPath = "";
+                        de = new DirectoryEntry(DomainManager.RootPath, _options.LDAP_USER, _options.LDAP_PASS, _options.AuthenticationTypes);
+                    }
+                }
+                catch
                 {
                     DomainManager.RootSubPath = "";
-                    de = new DirectoryEntry(DomainManager.RootPath, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
+                    de = new DirectoryEntry(DomainManager.RootPath, _options.LDAP_USER, _options.LDAP_PASS, _options.AuthenticationTypes);
+                }
+
+                if (de.Guid == Guid.Empty)
+                    de = GetDirectoryEntry(_options.LDAP);
+
+                de.RefreshCache();
+
+                if (propertiesToLoad == null || propertiesToLoad.Length <= 0)
+                    propertiesToLoad = PropertiesToLoad;
+
+                using (DirectorySearcher deSearch = new DirectorySearcher(de))
+                {
+                    deSearch.Filter = filter;
+                    deSearch.PageSize = _options.PageSize;
+                    deSearch.CacheResults = _options.CacheResults;
+                    deSearch.Asynchronous = _options.Asynchronous;
+                    deSearch.SearchScope = _options.SearchScope;
+                    deSearch.ClientTimeout = _options.Timeout;
+                    deSearch.ServerTimeLimit = _options.Timeout;
+                    deSearch.ServerPageTimeLimit = _options.Timeout;
+
+                    deSearch.PropertiesToLoad.AddRange(propertiesToLoad);
+                    return deSearch.FindOne();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                DomainManager.RootSubPath = "";
-                de = new DirectoryEntry(DomainManager.RootPath, LDAP_USER, LDAP_PASS, AuthenticationTypes.Secure);
-            }
-
-            if (de.Guid == Guid.Empty)
-                de = GetDirectoryEntry(LDAP);
-
-            de.RefreshCache();
-
-            if (propertiesToLoad == null || propertiesToLoad.Length <= 0)
-                propertiesToLoad = PropertiesToLoad;
-
-            using (DirectorySearcher deSearch = new DirectorySearcher(de))
-            {
-                deSearch.Filter = filter;
-                deSearch.PageSize = 1000;
-                deSearch.CacheResults = true;
-                deSearch.Asynchronous = true;
-                deSearch.SearchScope = SearchScope.Subtree;
-                deSearch.ClientTimeout = TimeSpan.FromMinutes(30);
-                deSearch.ServerTimeLimit = TimeSpan.FromMinutes(30);
-                deSearch.ServerPageTimeLimit = TimeSpan.FromMinutes(30);
-
-                deSearch.PropertiesToLoad.AddRange(propertiesToLoad);
-                return deSearch.FindOne();
+                throw new ActiveDirectoryException(ex.Message, ex);
             }
         }
 
@@ -260,7 +247,7 @@ namespace Afonsoft.ActiveDirectory
             return SearchOne(filter, null, propertiesToLoad);
         }
 
-         /// <summary>
+        /// <summary>
         /// Localizar um objeto no AD
         /// </summary>
         /// <param name="filter">(&amp;(objectClass=user)(objectCategory=person))(!(userAccountControl:1.2.840.113556.1.4.803:=2))</param>
@@ -280,8 +267,15 @@ namespace Afonsoft.ActiveDirectory
         {
             try
             {
-                DirectoryEntry de = new DirectoryEntry(LDAP, login, senha);
-                if (de.Guid != Guid.Empty)
+                DirectoryEntry de = new DirectoryEntry(_options.LDAP, login, senha, _options.AuthenticationTypes);
+
+                if (de == null || de.Guid == Guid.Empty)
+                {
+                    DomainManager.RootSubPath = "";
+                    de = new DirectoryEntry(DomainManager.RootPath, login, senha, _options.AuthenticationTypes);
+                }
+
+                if (de != null && de.Guid != Guid.Empty)
                 {
                     if (de.Username == login)
                         return true;
@@ -290,9 +284,13 @@ namespace Afonsoft.ActiveDirectory
 
                 return false;
             }
-            catch
+            catch (DirectoryServicesCOMException ex)
             {
-                return false;
+                throw new ActiveDirectoryException(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new ActiveDirectoryException(ex.Message, ex);
             }
         }
         #endregion
@@ -308,9 +306,6 @@ namespace Afonsoft.ActiveDirectory
 
         private void Dispose(bool disposing)
         {
-            LDAP = null;
-            LDAP_USER = null;
-            LDAP_PASS = null;
 
             if (disposing)
             {

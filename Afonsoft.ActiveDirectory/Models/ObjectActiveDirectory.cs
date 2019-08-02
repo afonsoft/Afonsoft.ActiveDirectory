@@ -9,7 +9,7 @@ namespace Afonsoft.ActiveDirectory.Models
     /// </summary>
     public abstract class ObjectActiveDirectory : IActiveDirectory, IDisposable
     {
-        private DirectoryEntry entry;
+        private DirectoryEntry _entry;
 
         /// <summary>
         /// ObjectActiveDirectory
@@ -17,7 +17,13 @@ namespace Afonsoft.ActiveDirectory.Models
         /// <param name="entry">DirectoryEntry</param>
         protected ObjectActiveDirectory(DirectoryEntry entry)
         {
-            Entry = entry;
+            _entry = entry;
+            Cn = GetProperty<string>("CN");
+            Ou = GetProperty<string>("OU");
+            UserAccountControl = GetProperty<int>("UserAccountControl");
+            WhenCreated = GetProperty<DateTime>("WhenCreated");
+            DistinguishedName = GetProperty<string>("DistinguishedName");
+            SAMAccountName = GetProperty<string>("sAMAccountName");
 
         }
         /// <summary>
@@ -25,7 +31,7 @@ namespace Afonsoft.ActiveDirectory.Models
         /// </summary>
         protected ObjectActiveDirectory()
         {
-            Entry = null;
+            _entry = null;
         }
 
         /// <summary>
@@ -33,20 +39,9 @@ namespace Afonsoft.ActiveDirectory.Models
         /// </summary>
         public DirectoryEntry Entry
         {
-
             get
             {
-                return entry;
-            }
-            set
-            {
-                entry = value;
-                Cn = GetProperty<string>("CN");
-                Ou = GetProperty<string>("OU");
-                UserAccountControl = GetProperty<int>("UserAccountControl");
-                WhenCreated = GetProperty<DateTime>("WhenCreated");
-                DistinguishedName = GetProperty<string>("DistinguishedName");
-                SAMAccountName = GetProperty<string>("sAMAccountName");
+                return _entry;
             }
         }
 
@@ -99,7 +94,7 @@ namespace Afonsoft.ActiveDirectory.Models
         /// <summary>
         /// Date of Create object in AD
         /// </summary>
-        public DateTime WhenCreated { get; set; }
+        public DateTime? WhenCreated { get; set; }
 
 
         /// <summary>
@@ -120,7 +115,7 @@ namespace Afonsoft.ActiveDirectory.Models
         public void Dispose()
         {
             Entry?.Dispose();
-            Entry = null;
+            _entry = null;
             GC.SuppressFinalize(this);
         }
 
